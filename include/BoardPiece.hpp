@@ -7,16 +7,15 @@ enum class Owner { Player, Computer };
 enum class Rank { Pawn, Knight, Bishop, Rook, Queen, King };
 
 /**
- * Class that represents the chess piece in a chess board
+ * Abstract class that represents the chess piece in a chess board
  */
 class BoardPiece {
 public:
   /**
    * Creates the board piece object
    * @param owner of the board piece
-   * @param rank of the board piece
    */
-  BoardPiece(Owner owner, Rank rank);
+  explicit BoardPiece(Owner owner);
 
   /**
    * Returns the owner of the board piece
@@ -25,15 +24,65 @@ public:
   Owner getOwner();
 
   /**
-   * Returns the rank of the board piece
-   * @return rank of the board piece
+   * Virtual function in children that returns the board piece as a characet
+   * @return character representing board piece
    */
-  Rank getRank();
+  virtual char getChar() = 0;
+
+  /**
+   * Virtual function to destroy the board piece
+   */
+  virtual ~BoardPiece() = default;
 
 private:
   /** The owner of the board piece */
   Owner m_Owner;
+};
 
-  /** The rank of the board piece */
-  Rank m_Rank;
+/**
+ * Class to represent the pawn piece in the chess board
+ */
+class PawnPiece : public BoardPiece {
+  using BoardPiece::BoardPiece;
+  char getChar() override;
+};
+
+/**
+ * Class to represent the knight piece in the chess board
+ */
+class KnightPiece : public BoardPiece {
+  using BoardPiece::BoardPiece;
+  char getChar() override;
+};
+
+/**
+ * Class to represent the bishop piece in the chess board
+ */
+class BishopPiece : public BoardPiece {
+  using BoardPiece::BoardPiece;
+  char getChar() override;
+};
+
+/**
+ * Class to represent the rook piece in the chess board
+ */
+class RookPiece : public BoardPiece {
+  using BoardPiece::BoardPiece;
+  char getChar() override;
+};
+
+/**
+ * Class to represent the queen piece in the chess board
+ */
+class QueenPiece : public BoardPiece {
+  using BoardPiece::BoardPiece;
+  char getChar() override;
+};
+
+/**
+ * Class to represent the king piece in the chess board
+ */
+class KingPiece : public BoardPiece {
+  using BoardPiece::BoardPiece;
+  char getChar() override;
 };

@@ -19,38 +19,38 @@ Board::Board() {
 
   for (int col = 0; col < BOARD_SIZE; col++) {
     // Adds all of the pawns to the chess board with appropriate owner
-    m_Board[COMPUTER_MAIN_ROW + 1][col] =
-        new BoardPiece(Owner::Computer, Rank::Pawn);
-    m_Board[PLAYER_MAIN_ROW - 1][col] =
-        new BoardPiece(Owner::Player, Rank::Pawn);
+    m_Board[COMPUTER_MAIN_ROW + 1][col] = new PawnPiece(Owner::Computer);
+    m_Board[PLAYER_MAIN_ROW - 1][col] = new PawnPiece(Owner::Player);
 
-    // Figures out the rank of the chess piece
-    Rank chosenRank;
+    BoardPiece **computerPointer = &m_Board[COMPUTER_MAIN_ROW][col];
+    BoardPiece **playerPointer = &m_Board[PLAYER_MAIN_ROW][col];
+
+    // Assign a chess piece with the correct owner
     switch (col) {
     case 0:
     case 7:
-      chosenRank = Rank::Rook;
+      *computerPointer = new RookPiece(Owner::Computer);
+      *playerPointer = new RookPiece(Owner::Player);
       break;
     case 1:
     case 6:
-      chosenRank = Rank::Knight;
+      *computerPointer = new KnightPiece(Owner::Computer);
+      *playerPointer = new KnightPiece(Owner::Player);
       break;
     case 2:
     case 5:
-      chosenRank = Rank::Bishop;
-      break;
-    case 3:
-      chosenRank = Rank::King;
+      *computerPointer = new BishopPiece(Owner::Computer);
+      *playerPointer = new BishopPiece(Owner::Player);
       break;
     case 4:
-      chosenRank = Rank::Queen;
+      *computerPointer = new QueenPiece(Owner::Computer);
+      *playerPointer = new QueenPiece(Owner::Player);
+      break;
+    case 3:
+      *computerPointer = new KingPiece(Owner::Computer);
+      *playerPointer = new KingPiece(Owner::Player);
       break;
     }
-
-    // Adds the chess pieces to the chess board with appropriate owner and rank
-    m_Board[COMPUTER_MAIN_ROW][col] =
-        new BoardPiece(Owner::Computer, chosenRank);
-    m_Board[PLAYER_MAIN_ROW][col] = new BoardPiece(Owner::Player, chosenRank);
   }
 }
 
@@ -58,41 +58,17 @@ void Board::printBoard() {
   for (int row = 0; row < BOARD_SIZE; row++) {
     for (int col = 0; col < BOARD_SIZE; col++) {
       BoardPiece *piece = m_Board[row][col];
-      char ch;
 
-      // Select a charcter to represent the chess pieces
-      //* I couldn't get unicode chess pieces to work,
-      //* so I decided to use characters instead
-      if (piece != nullptr) {
-        switch (piece->getRank()) {
-        case Rank::Pawn:
-          ch = 'P';
-          break;
-        case Rank::Knight:
-          ch = 'N';
-          break;
-        case Rank::Bishop:
-          ch = 'B';
-          break;
-        case Rank::Rook:
-          ch = 'R';
-          break;
-        case Rank::Queen:
-          ch = 'Q';
-          break;
-        case Rank::King:
-          ch = 'K';
-          break;
-        }
-      }
-
-      // Prints the piece with appropriate color { player: red, computer: lue }
       if (piece == nullptr) {
         printf("   ");
-      } else if (piece->getOwner() == Owner::Player) {
-        printf(" \033[91m%c\033[0m ", ch);
       } else {
-        printf(" \033[94m%c\033[0m ", ch);
+        // Prints the piece with color { player: red, computer: blue }
+        char ch = piece->getChar();
+        const char *output = piece->getOwner() == Owner::Player
+                                 ? " \033[94m%c\033[0m "
+                                 : " \033[91m%c\033[0m ";
+
+        printf(output, ch);
       }
 
       if (col != BOARD_SIZE - 1) {
