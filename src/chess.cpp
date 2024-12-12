@@ -1,8 +1,7 @@
-#include <iostream>
-
-using namespace std;
+#include "../include/Board.hpp"
 
 int main() {
-  cout << "Chess\n";
+  Board board;
+  board.printBoard();
   return 0;
 }

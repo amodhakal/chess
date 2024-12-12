@@ -1,6 +1,6 @@
 compile:
 	mkdir -p bin
-	g++ -Wall src/*.cpp -o bin/chess
+	g++ -std=c++20 -Wall src/*.cpp -o bin/chess
 run:
 	./bin/chess
 test:
