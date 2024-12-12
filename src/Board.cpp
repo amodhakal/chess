@@ -3,10 +3,14 @@
 #include <cstdio>
 #include <string>
 
+/** The row where the computer's main pieces (kings) intiially are */
 const int COMPUTER_MAIN_ROW = 0;
+
+/** The row where the player's main peices (kings) initially are  */
 const int PLAYER_MAIN_ROW = 7;
 
 Board::Board() {
+  // Initializes all the board pieces with a null pointer
   for (int row = 0; row < BOARD_SIZE; row++) {
     for (int col = 0; col < BOARD_SIZE; col++) {
       m_Board[row][col] = nullptr;
@@ -14,11 +18,13 @@ Board::Board() {
   }
 
   for (int col = 0; col < BOARD_SIZE; col++) {
+    // Adds all of the pawns to the chess board with appropriate owner
     m_Board[COMPUTER_MAIN_ROW + 1][col] =
         new BoardPiece(Owner::Computer, Rank::Pawn);
     m_Board[PLAYER_MAIN_ROW - 1][col] =
         new BoardPiece(Owner::Player, Rank::Pawn);
 
+    // Figures out the rank of the chess piece
     Rank chosenRank;
     switch (col) {
     case 0:
@@ -41,6 +47,7 @@ Board::Board() {
       break;
     }
 
+    // Adds the chess pieces to the chess board with appropriate owner and rank
     m_Board[COMPUTER_MAIN_ROW][col] =
         new BoardPiece(Owner::Computer, chosenRank);
     m_Board[PLAYER_MAIN_ROW][col] = new BoardPiece(Owner::Player, chosenRank);
@@ -53,6 +60,9 @@ void Board::printBoard() {
       BoardPiece *piece = m_Board[row][col];
       char ch;
 
+      // Select a charcter to represent the chess pieces
+      //* I couldn't get unicode chess pieces to work,
+      //* so I decided to use characters instead
       if (piece != nullptr) {
         switch (piece->getRank()) {
         case Rank::Pawn:
@@ -76,6 +86,7 @@ void Board::printBoard() {
         }
       }
 
+      // Prints the piece with appropriate color { player: red, computer: lue }
       if (piece == nullptr) {
         printf("   ");
       } else if (piece->getOwner() == Owner::Player) {
