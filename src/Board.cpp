@@ -1,6 +1,7 @@
 #include "../include/Board.hpp"
 
 #include <cstdio>
+#include <string>
 
 const int COMPUTER_MAIN_ROW = 0;
 const int PLAYER_MAIN_ROW = 7;
@@ -50,36 +51,38 @@ void Board::printBoard() {
   for (int row = 0; row < BOARD_SIZE; row++) {
     for (int col = 0; col < BOARD_SIZE; col++) {
       BoardPiece *piece = m_Board[row][col];
+      char ch;
+
+      if (piece != nullptr) {
+        switch (piece->getRank()) {
+        case Rank::Pawn:
+          ch = 'P';
+          break;
+        case Rank::Knight:
+          ch = 'N';
+          break;
+        case Rank::Bishop:
+          ch = 'B';
+          break;
+        case Rank::Rook:
+          ch = 'R';
+          break;
+        case Rank::Queen:
+          ch = 'Q';
+          break;
+        case Rank::King:
+          ch = 'K';
+          break;
+        }
+      }
 
       if (piece == nullptr) {
-        printf("  ");
-        continue;
+        printf("   ");
+      } else if (piece->getOwner() == Owner::Player) {
+        printf(" \033[91m%c\033[0m ", ch);
+      } else {
+        printf(" \033[94m%c\033[0m ", ch);
       }
-
-      int idx = 0;
-      switch (piece->getRank()) {
-      case Rank::Pawn:
-        idx = 15;
-        break;
-      case Rank::Knight:
-        idx = 13;
-        break;
-      case Rank::Bishop:
-        idx = 1;
-        break;
-      case Rank::Rook:
-        idx = 17;
-        break;
-      case Rank::Queen:
-        idx = 16;
-        break;
-      case Rank::King:
-        idx = 10;
-        break;
-      }
-
-      char startingA = piece->getOwner() == Owner::Player ? 'A' : 'a';
-      printf(" %c ", startingA + idx);
 
       if (col != BOARD_SIZE - 1) {
         printf("|");
