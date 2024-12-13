@@ -57,7 +57,7 @@ void getUserMovementInput(Movement *movement) {
           "4. The third one must be a capital letter between A and H inclusive\n"
           "5. The last one must be a number between 1 and 8 inclusive\n\n"
           "With this, we hope you finally understood how the input works.\n"
-          "Now try again. If still ensure, email me and I will help you.\n";
+          "Now try again. If still unsure, email me and I will help you.\n";
 
   exit(1);
 }
