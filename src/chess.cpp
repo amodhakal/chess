@@ -9,11 +9,18 @@
  */
 int main() {
   Board board;
-  board.printBoard();
-
-  // Get the player input
   Movement movement = {0};
-  getUserMovementInput(&movement);
+
+  while (true) {
+    board.printBoard();
+
+    // Handle user input and movement
+    int placementResult;
+    do {
+      getUserMovementInput(&movement);
+      placementResult = board.makeOwnerMovement(movement, Owner::Player);
+    } while (placementResult != 0);
+  }
 
   return 0;
 }

@@ -1,7 +1,10 @@
 #include "../include/Board.hpp"
 
 #include <cstdio>
+#include <iostream>
 #include <string>
+
+using namespace std;
 
 /** The row where the computer's main pieces (kings) intiially are */
 const int COMPUTER_MAIN_ROW = 0;
@@ -54,12 +57,14 @@ Board::Board() {
   }
 }
 
+BoardPiece *Board::getChessPiece(int row, int col) { return (Board::m_Board[row][col]); }
+
 void Board::printBoard() {
   printf("\n   | A | B | C | D | E | F | G | H ");
 
   for (int row = 0; row < BOARD_SIZE; row++) {
-      printf("\n---+---+---+---+---+---+---+---+---\n");
-            printf(" %d |", row + 1);
+    printf("\n---+---+---+---+---+---+---+---+---\n");
+    printf(" %d |", row + 1);
     for (int col = 0; col < BOARD_SIZE; col++) {
 
       BoardPiece *piece = m_Board[row][col];
@@ -69,9 +74,7 @@ void Board::printBoard() {
       } else {
         // Prints the piece with color { player: red, computer: blue }
         char ch = piece->getChar();
-        const char *output = piece->getOwner() == Owner::Player
-                                 ? " \033[94m%c\033[0m "
-                                 : " \033[91m%c\033[0m ";
+        const char *output = piece->getOwner() == Owner::Player ? " \033[94m%c\033[0m " : " \033[91m%c\033[0m ";
 
         printf(output, ch);
       }
@@ -83,4 +86,28 @@ void Board::printBoard() {
   }
 
   printf("\n");
+}
+
+int Board::makeOwnerMovement(Movement &movement, Owner owner) {
+  // Get chosen chess piece, return -1 if nothing exists there
+  BoardPiece *chosenPiece = Board::getChessPiece(movement.startY, movement.startX);
+  if (chosenPiece == nullptr) {
+    cerr << "There is no pieces here\n";
+    return -1;
+  }
+
+  // Return -2 if the chosen piece is not owned by the given owner
+  if (chosenPiece->getOwner() != owner) {
+    cerr << "You don't own this piece" << chosenPiece->getChar() << ", thus can't move it\n"
+            "Owned by " << chosenPiece->getOwnerString() << '\n';
+    return -2;
+  }
+
+  // TODO: Add further checking
+
+  // Move the piece 
+  //! Haven't implemented taking a piece, just takes ove the spot right now
+  Board::m_Board[movement.startY][movement.startX] = nullptr;
+  Board::m_Board[movement.endY][movement.endX] = chosenPiece;
+  return 0;
 }

@@ -1,4 +1,5 @@
 #pragma once
+#include <string>
 
 /** Determines who the owner of the chess piece is */
 enum class Owner { Player, Computer };
@@ -24,6 +25,12 @@ public:
   Owner getOwner();
 
   /**
+   * Returns the owner of the board piece as a string
+   * @return board piece owner as string
+   */
+  std::string getOwnerString();
+
+  /**
    * Virtual function in children that returns the board piece as a characet
    * @return character representing board piece
    */
@@ -43,7 +50,8 @@ private:
  * Class to represent the pawn piece in the chess board
  */
 class PawnPiece : public BoardPiece {
-  using BoardPiece::BoardPiece;
+public:
+  PawnPiece(Owner owner) : BoardPiece(owner) {};
   char getChar() override;
 };
 
@@ -51,7 +59,8 @@ class PawnPiece : public BoardPiece {
  * Class to represent the knight piece in the chess board
  */
 class KnightPiece : public BoardPiece {
-  using BoardPiece::BoardPiece;
+public:
+  KnightPiece(Owner owner) : BoardPiece(owner) {};
   char getChar() override;
 };
 
@@ -59,7 +68,8 @@ class KnightPiece : public BoardPiece {
  * Class to represent the bishop piece in the chess board
  */
 class BishopPiece : public BoardPiece {
-  using BoardPiece::BoardPiece;
+public:
+  BishopPiece(Owner owner) : BoardPiece(owner) {};
   char getChar() override;
 };
 
@@ -67,7 +77,8 @@ class BishopPiece : public BoardPiece {
  * Class to represent the rook piece in the chess board
  */
 class RookPiece : public BoardPiece {
-  using BoardPiece::BoardPiece;
+public:
+  RookPiece(Owner owner) : BoardPiece(owner) {};
   char getChar() override;
 };
 
@@ -75,7 +86,8 @@ class RookPiece : public BoardPiece {
  * Class to represent the queen piece in the chess board
  */
 class QueenPiece : public BoardPiece {
-  using BoardPiece::BoardPiece;
+public:
+  QueenPiece(Owner owner) : BoardPiece(owner) {};
   char getChar() override;
 };
 
@@ -83,6 +95,7 @@ class QueenPiece : public BoardPiece {
  * Class to represent the king piece in the chess board
  */
 class KingPiece : public BoardPiece {
-  using BoardPiece::BoardPiece;
+public:
+  KingPiece(Owner owner) : BoardPiece(owner) {};
   char getChar() override;
 };
