@@ -7,15 +7,6 @@
 using namespace std;
 
 
-User::User( std::string name, std::string outputColor ) : m_Name( std::move( name )),
-                                                          m_OutputColor( std::move( outputColor ))
-{}
-
-string User::getOutputColor()
-{
-  return User::m_OutputColor;
-}
-
 BoardPiece::BoardPiece( User user ) : m_User( std::move( user ))
 {}
 

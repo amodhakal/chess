@@ -53,6 +53,11 @@ Board::Board( const User &bottomUser, const User &topUser )
   }
 }
 
+void Board::setBoardPiece( BoardPiece *piece, int row, int col )
+{
+  Board::m_Board[ row ][ col ] = piece;
+}
+
 BoardPiece *Board::getBoardPiece( int row, int col )
 {
   return Board::m_Board[ row ][ col ];
@@ -61,8 +66,11 @@ BoardPiece *Board::getBoardPiece( int row, int col )
 void Board::printBoard()
 {
   using namespace std;
+
+  cout << "\n  | A | B | C | D | E | F | G | H ";
+
   for ( int rowIdx = 0; rowIdx < BOARD_LENGTH; rowIdx++ ) {
-    cout << "\n---+---+---+---+---+---+---+---+---\n" << rowIdx + 1 << " |";
+    cout << "\n--+---+---+---+---+---+---+---+---\n" << rowIdx + 1 << " |";
 
     for ( int colIdx = 0; colIdx < BOARD_LENGTH; colIdx++ ) {
       BoardPiece *piece = getBoardPiece( rowIdx, colIdx );
@@ -80,4 +88,88 @@ void Board::printBoard()
   }
 
   cout << "\n";
+}
+
+typedef struct
+{
+  int startRow;
+  int startCol;
+  int endRow;
+  int endCol;
+} PositionChange;
+
+void readUserInputTerminal( const std::string &username, PositionChange *positionChange )
+{
+  using namespace std;
+
+  handler:
+  cout << "\nFor " << username << ", what is the desired position change(XX:XX)?: " << endl;
+  string result;
+  getline( cin, result );
+
+  if ( result.length() != 5 ) {
+    cerr << "Invalid length given, must be in format XX:XX" << endl;
+    goto handler;
+  }
+
+  int startCol = result[ 0 ] - 'A';
+  if ( startCol < 0 || startCol > BOARD_LENGTH - 1 ) {
+    cerr << "Expected first character to be capital letters from A-H inclusive" << endl;
+    goto handler;
+  }
+
+  int startRow = result[ 1 ] - '1';
+  if ( startRow < 0 || startRow > BOARD_LENGTH - 1 ) {
+    cerr << "Expected second character to be number between 1 and 8 inclusive" << endl;
+    goto handler;
+  }
+
+  char seperator = result[ 2 ];
+  if ( seperator != ':' ) {
+    cerr << "Expected third character to be ':'" << endl;
+    goto handler;
+  }
+
+  int endCol = result[ 3 ] - 'A';
+  if ( endCol < 0 || endCol > BOARD_LENGTH - 1 ) {
+    cerr << "Expected fourth character to be capital letters from A-H inclusive" << endl;
+    goto handler;
+  }
+
+  int endRow = result[ 4 ] - '1';
+  if ( endRow < 0 || endRow > BOARD_LENGTH - 1 ) {
+    cerr << "Expected fifth character to be number between 1 and 8 inclusive" << endl;
+    goto handler;
+  }
+
+  positionChange->startRow = startRow;
+  positionChange->startCol = startCol;
+  positionChange->endRow = endRow;
+  positionChange->endCol = endCol;
+}
+
+void Board::handleUserInput( User &user )
+{
+  using namespace std;
+
+  handler:
+
+  PositionChange desired;
+  readUserInputTerminal( user.getName(), &desired );
+
+  BoardPiece *movingPiece = Board::getBoardPiece( desired.startRow, desired.startCol );
+  if ( movingPiece == nullptr ) {
+    cerr << "A chess piece in the given location doesn't exist" << endl;
+    goto handler;
+  }
+
+  if ( movingPiece->getUser() != user ) {
+    cerr << "You don't own this piece" << endl;
+    goto handler;
+  }
+
+  // TODO: Check positions change doable for that specific piece
+
+  Board::setBoardPiece(nullptr, desired.startRow, desired.startCol);
+  Board::setBoardPiece( movingPiece, desired.endRow, desired.endCol);
 }

@@ -5,19 +5,7 @@
 #ifndef CHESS_BOARDPIECE_H
 #define CHESS_BOARDPIECE_H
 
-#include <string>
-
-class User
-{
-public:
-  explicit User( std::string name, std::string outputColor );
-
-  std::string getOutputColor();
-
-private:
-  std::string m_Name;
-  std::string m_OutputColor;
-};
+#include "User.h"
 
 class BoardPiece
 {

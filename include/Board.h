@@ -16,9 +16,13 @@ class Board
 public:
   Board( const User &bottomUser, const User &topUser );
 
+  void setBoardPiece( BoardPiece *piece, int row, int col );
+
   BoardPiece *getBoardPiece( int row, int col );
 
   void printBoard();
+
+  void handleUserInput(User& user);
 
 private:
   BoardMatrix m_Board{};

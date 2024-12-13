@@ -7,4 +7,6 @@ add_executable(chess src/chess.cpp
         include/Board.h
         include/BoardPiece.h
         src/BoardPiece.cpp
-        src/Board.cpp)
+        src/Board.cpp
+        src/User.cpp
+        include/User.h)
