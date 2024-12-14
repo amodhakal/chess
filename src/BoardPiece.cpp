@@ -1,19 +1,46 @@
-#include "../include/BoardPiece.hpp"
+//
+// Created by Amodh on 12/13/24.
+//
 
-BoardPiece::BoardPiece(Owner owner) : m_Owner(owner) {}
+#include "../include/BoardPiece.h"
 
-Owner BoardPiece::getOwner() { return BoardPiece::m_Owner; }
+using namespace std;
 
-std::string BoardPiece::getOwnerString() { return (BoardPiece::m_Owner == Owner::Player) ? "Player" : "Computer"; }
 
-char PawnPiece::getChar() { return 'P'; }
+BoardPiece::BoardPiece( User user ) : m_User( std::move( user ))
+{}
 
-char KnightPiece::getChar() { return 'N'; }
+User BoardPiece::getUser()
+{
+  return BoardPiece::m_User;
+}
 
-char BishopPiece::getChar() { return 'B'; }
+char PawnPiece::getPieceAsCharacter()
+{
+  return 'P';
+}
 
-char RookPiece::getChar() { return 'R'; }
+char KnightPiece::getPieceAsCharacter()
+{
+  return 'N';
+}
 
-char QueenPiece::getChar() { return 'Q'; }
+char BishopPiece::getPieceAsCharacter()
+{
+  return 'B';
+}
 
-char KingPiece::getChar() { return 'K'; }
+char RookPiece::getPieceAsCharacter()
+{
+  return 'R';
+}
+
+char QueenPiece::getPieceAsCharacter()
+{
+  return 'Q';
+}
+
+char KingPiece::getPieceAsCharacter()
+{
+  return 'K';
+}

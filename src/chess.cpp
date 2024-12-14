@@ -1,25 +1,18 @@
-#include "../include/Board.hpp"
-#include "../include/Utils.hpp"
+#include "../include/Board.h"
 
-#include <cstdio>
+int main()
+{
+  User player1( "Player1", "94" );
+  User player2("Player2", "91");
+  Board board( player1, player2);
 
-/**
- * The starting function of the chess program
- * @return 0 if success, other numbers otherwise
- */
-int main() {
-  Board board;
-  Movement movement = {0};
-
-  while (true) {
+  while ( true ) {
     board.printBoard();
+    board.handleUserInput(player1);
+    board.printBoard();
+    board.handleUserInput(player2);
 
-    // Handle user input and movement
-    int placementResult;
-    do {
-      getUserMovementInput(&movement);
-      placementResult = board.makeOwnerMovement(movement, Owner::Player);
-    } while (placementResult != 0);
+    break;
   }
 
   return 0;

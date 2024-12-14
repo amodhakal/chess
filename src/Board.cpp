@@ -1,113 +1,175 @@
-#include "../include/Board.hpp"
+//
+// Created by Amodh on 12/13/24.
+//
 
-#include <cstdio>
+#include "../include/Board.h"
 #include <iostream>
-#include <string>
 
-using namespace std;
+constexpr int TOPMOST_ROW = 0;
+constexpr int BOTTOMMOST_ROW = 7;
 
-/** The row where the computer's main pieces (kings) intiially are */
-const int COMPUTER_MAIN_ROW = 0;
-
-/** The row where the player's main peices (kings) initially are  */
-const int PLAYER_MAIN_ROW = 7;
-
-Board::Board() {
-  // Initializes all the board pieces with a null pointer
-  for (int row = 0; row < BOARD_SIZE; row++) {
-    for (int col = 0; col < BOARD_SIZE; col++) {
-      m_Board[row][col] = nullptr;
+Board::Board( const User &bottomUser, const User &topUser )
+{
+  for ( auto &row: m_Board ) {
+    for ( auto &piece: row ) {
+      piece = nullptr;
     }
   }
 
-  for (int col = 0; col < BOARD_SIZE; col++) {
-    // Adds all of the pawns to the chess board with appropriate owner
-    m_Board[COMPUTER_MAIN_ROW + 1][col] = new PawnPiece(Owner::Computer);
-    m_Board[PLAYER_MAIN_ROW - 1][col] = new PawnPiece(Owner::Player);
+  for ( int col = 0; col < BOARD_LENGTH; col++ ) {
+    m_Board[ TOPMOST_ROW + 1 ][ col ] = new PawnPiece( topUser );
+    m_Board[ BOTTOMMOST_ROW - 1 ][ col ] = new PawnPiece( bottomUser );
 
-    BoardPiece **computerPointer = &m_Board[COMPUTER_MAIN_ROW][col];
-    BoardPiece **playerPointer = &m_Board[PLAYER_MAIN_ROW][col];
+    BoardPiece **topPiece = &m_Board[ TOPMOST_ROW ][ col ];
+    BoardPiece **bottomPiece = &m_Board[ BOTTOMMOST_ROW ][ col ];
 
-    // Assign a chess piece with the correct owner
-    switch (col) {
-    case 0:
-    case 7:
-      *computerPointer = new RookPiece(Owner::Computer);
-      *playerPointer = new RookPiece(Owner::Player);
-      break;
-    case 1:
-    case 6:
-      *computerPointer = new KnightPiece(Owner::Computer);
-      *playerPointer = new KnightPiece(Owner::Player);
-      break;
-    case 2:
-    case 5:
-      *computerPointer = new BishopPiece(Owner::Computer);
-      *playerPointer = new BishopPiece(Owner::Player);
-      break;
-    case 4:
-      *computerPointer = new QueenPiece(Owner::Computer);
-      *playerPointer = new QueenPiece(Owner::Player);
-      break;
-    case 3:
-      *computerPointer = new KingPiece(Owner::Computer);
-      *playerPointer = new KingPiece(Owner::Player);
-      break;
+    if ( col == 1 || col == 6 ) {
+      *topPiece = new KnightPiece( topUser );
+      *bottomPiece = new KnightPiece( bottomUser );
+      continue;
+    }
+
+    if ( col == 2 || col == 5 ) {
+      *topPiece = new BishopPiece( topUser );
+      *bottomPiece = new BishopPiece( bottomUser );
+      continue;
+    }
+
+    if ( col == 0 || col == 7 ) {
+      *topPiece = new RookPiece( topUser );
+      *bottomPiece = new RookPiece( bottomUser );
+      continue;
+    }
+
+    if ( col == 4 ) {
+      *topPiece = new QueenPiece( topUser );
+      *bottomPiece = new QueenPiece( bottomUser );
+    }
+
+    if ( col == 3 ) {
+      *topPiece = new KingPiece( topUser );
+      *bottomPiece = new KingPiece( bottomUser );
     }
   }
 }
 
-BoardPiece *Board::getChessPiece(int row, int col) { return (Board::m_Board[row][col]); }
+void Board::setBoardPiece( BoardPiece *piece, int row, int col )
+{
+  Board::m_Board[ row ][ col ] = piece;
+}
 
-void Board::printBoard() {
-  printf("\n   | A | B | C | D | E | F | G | H ");
+BoardPiece *Board::getBoardPiece( int row, int col )
+{
+  return Board::m_Board[ row ][ col ];
+}
 
-  for (int row = 0; row < BOARD_SIZE; row++) {
-    printf("\n---+---+---+---+---+---+---+---+---\n");
-    printf(" %d |", row + 1);
-    for (int col = 0; col < BOARD_SIZE; col++) {
+void Board::printBoard()
+{
+  using namespace std;
 
-      BoardPiece *piece = m_Board[row][col];
+  cout << "\n  | A | B | C | D | E | F | G | H ";
 
-      if (piece == nullptr) {
-        printf("   ");
+  for ( int rowIdx = 0; rowIdx < BOARD_LENGTH; rowIdx++ ) {
+    cout << "\n--+---+---+---+---+---+---+---+---\n" << rowIdx + 1 << " |";
+
+    for ( int colIdx = 0; colIdx < BOARD_LENGTH; colIdx++ ) {
+      BoardPiece *piece = getBoardPiece( rowIdx, colIdx );
+      if ( piece == nullptr ) {
+        cout << "   ";
       } else {
-        // Prints the piece with color { player: red, computer: blue }
-        char ch = piece->getChar();
-        const char *output = piece->getOwner() == Owner::Player ? " \033[94m%c\033[0m " : " \033[91m%c\033[0m ";
-
-        printf(output, ch);
+        cout << "\033[" << piece->getUser().getOutputColor() << "m "
+             << piece->getPieceAsCharacter() << " \033[0m";
       }
 
-      if (col != BOARD_SIZE - 1) {
-        printf("|");
+      if ( colIdx != BOARD_LENGTH - 1 ) {
+        cout << "|";
       }
     }
   }
 
-  printf("\n");
+  cout << "\n";
 }
 
-int Board::makeOwnerMovement(Movement &movement, Owner owner) {
-  // Get chosen chess piece, return -1 if nothing exists there
-  BoardPiece *chosenPiece = Board::getChessPiece(movement.startY, movement.startX);
-  if (chosenPiece == nullptr) {
-    cerr << "There is no pieces here\n";
-    return -1;
+typedef struct
+{
+  int startRow;
+  int startCol;
+  int endRow;
+  int endCol;
+} PositionChange;
+
+void readUserInputTerminal( const std::string &username, PositionChange *positionChange )
+{
+  using namespace std;
+
+  handler:
+  cout << "\nFor " << username << ", what is the desired position change(XX:XX)?: " << endl;
+  string result;
+  getline( cin, result );
+
+  if ( result.length() != 5 ) {
+    cerr << "Invalid length given, must be in format XX:XX" << endl;
+    goto handler;
   }
 
-  // Return -2 if the chosen piece is not owned by the given owner
-  if (chosenPiece->getOwner() != owner) {
-    cerr << "You don't own this piece" << chosenPiece->getChar() << ", thus can't move it\n"
-            "Owned by " << chosenPiece->getOwnerString() << '\n';
-    return -2;
+  int startCol = result[ 0 ] - 'A';
+  if ( startCol < 0 || startCol > BOARD_LENGTH - 1 ) {
+    cerr << "Expected first character to be capital letters from A-H inclusive" << endl;
+    goto handler;
   }
 
-  // TODO: Add further checking
+  int startRow = result[ 1 ] - '1';
+  if ( startRow < 0 || startRow > BOARD_LENGTH - 1 ) {
+    cerr << "Expected second character to be number between 1 and 8 inclusive" << endl;
+    goto handler;
+  }
 
-  // Move the piece 
-  //! Haven't implemented taking a piece, just takes ove the spot right now
-  Board::m_Board[movement.startY][movement.startX] = nullptr;
-  Board::m_Board[movement.endY][movement.endX] = chosenPiece;
-  return 0;
+  char seperator = result[ 2 ];
+  if ( seperator != ':' ) {
+    cerr << "Expected third character to be ':'" << endl;
+    goto handler;
+  }
+
+  int endCol = result[ 3 ] - 'A';
+  if ( endCol < 0 || endCol > BOARD_LENGTH - 1 ) {
+    cerr << "Expected fourth character to be capital letters from A-H inclusive" << endl;
+    goto handler;
+  }
+
+  int endRow = result[ 4 ] - '1';
+  if ( endRow < 0 || endRow > BOARD_LENGTH - 1 ) {
+    cerr << "Expected fifth character to be number between 1 and 8 inclusive" << endl;
+    goto handler;
+  }
+
+  positionChange->startRow = startRow;
+  positionChange->startCol = startCol;
+  positionChange->endRow = endRow;
+  positionChange->endCol = endCol;
+}
+
+void Board::handleUserInput( User &user )
+{
+  using namespace std;
+
+  handler:
+
+  PositionChange desired;
+  readUserInputTerminal( user.getName(), &desired );
+
+  BoardPiece *movingPiece = Board::getBoardPiece( desired.startRow, desired.startCol );
+  if ( movingPiece == nullptr ) {
+    cerr << "A chess piece in the given location doesn't exist" << endl;
+    goto handler;
+  }
+
+  if ( movingPiece->getUser() != user ) {
+    cerr << "You don't own this piece" << endl;
+    goto handler;
+  }
+
+  // TODO: Check positions change doable for that specific piece
+
+  Board::setBoardPiece(nullptr, desired.startRow, desired.startCol);
+  Board::setBoardPiece( movingPiece, desired.endRow, desired.endCol);
 }
